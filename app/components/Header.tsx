@@ -6,6 +6,7 @@ import './Header.css';
 export default function Header() {
     const [language, setLanguage] = useState<'en' | 'de'>('en');
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme-mode');
@@ -41,6 +42,12 @@ export default function Header() {
         setLanguage(language === 'en' ? 'de' : 'en');
     };
 
+    const handleNavClick = (section: string) => {
+        const element = document.getElementById(section);
+        element?.scrollIntoView({ behavior: 'smooth' });
+        setIsMenuOpen(false); // Close menu after navigation
+    };
+
     return (
         <header className="main-header" id="header">
             <nav className="nav-container">
@@ -50,11 +57,42 @@ export default function Header() {
                     onClick={(e) => {
                         e.preventDefault();
                         window.scrollTo({ top: 0, behavior: 'smooth' });
+                        setIsMenuOpen(false);
                     }}
                 >
                     main(logo)
                 </a>
 
+                {/* Hamburger Button - Mobile Only */}
+                <button 
+                    className="burger-menu"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    aria-label="Toggle menu"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                {/* Off-canvas Menu */}
+                <div className={`nav-menu-offcanvas ${isMenuOpen ? 'open' : ''}`}>
+                    {navLinks.map((link) => (
+                        <a
+                            key={link.section}
+                            href={link.href}
+                            className="nav-link"
+                            data-section={link.section}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleNavClick(link.section);
+                            }}
+                        >
+                            {getNavText(link.textEn, link.textDe)}
+                        </a>
+                    ))}
+                </div>
+
+                {/* Desktop Menu */}
                 <div className="nav-menu" id="navMenu">
                     {navLinks.map((link) => (
                         <a
@@ -64,8 +102,7 @@ export default function Header() {
                             data-section={link.section}
                             onClick={(e) => {
                                 e.preventDefault();
-                                const element = document.getElementById(link.section);
-                                element?.scrollIntoView({ behavior: 'smooth' });
+                                handleNavClick(link.section);
                             }}
                         >
                             {getNavText(link.textEn, link.textDe)}
