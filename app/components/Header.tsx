@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import './Header.css';
 
 export default function Header() {
-    const [language, setLanguage] = useState<'en' | 'de'>('en');
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -18,8 +18,8 @@ export default function Header() {
             isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         }
         
-        setIsDarkMode(isDark);
         document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+        setIsDarkMode(isDark);
     }, []);
 
     const toggleTheme = () => {
@@ -30,38 +30,26 @@ export default function Header() {
     };
 
     const navLinks = [
-        { href: '#works', section: 'works', textEn: 'Works', textDe: 'Arbeiten' },
-        { href: '#about', section: 'about', textEn: 'About', textDe: 'Über mich' }
+        { href: '/works', label: 'Works' },
+        { href: '/bio', label: 'Bio' },
+        { href: '/about', label: 'About' },
+        { href: '/contact', label: 'Contact' }
     ];
 
-    const getNavText = (textEn: string, textDe: string) => {
-        return language === 'en' ? textEn : textDe;
-    };
-
-    const toggleLanguage = () => {
-        setLanguage(language === 'en' ? 'de' : 'en');
-    };
-
-    const handleNavClick = (section: string) => {
-        const element = document.getElementById(section);
-        element?.scrollIntoView({ behavior: 'smooth' });
-        setIsMenuOpen(false); // Close menu after navigation
+    const closeMenu = () => {
+        setIsMenuOpen(false);
     };
 
     return (
         <header className="main-header" id="header">
             <nav className="nav-container">
-                <a 
-                    href="#home" 
+                <Link
+                    href="/"
                     className="nav-brand"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        setIsMenuOpen(false);
-                    }}
+                    onClick={closeMenu}
                 >
-                    main(logo)
-                </a>
+                    Living Archive
+                </Link>
 
                 {/* Hamburger Button - Mobile Only */}
                 <button 
@@ -77,44 +65,31 @@ export default function Header() {
                 {/* Off-canvas Menu */}
                 <div className={`nav-menu-offcanvas ${isMenuOpen ? 'open' : ''}`}>
                     {navLinks.map((link) => (
-                        <a
-                            key={link.section}
+                        <Link
+                            key={link.href}
                             href={link.href}
                             className="nav-link"
-                            data-section={link.section}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleNavClick(link.section);
-                            }}
+                            onClick={closeMenu}
                         >
-                            {getNavText(link.textEn, link.textDe)}
-                        </a>
+                            {link.label}
+                        </Link>
                     ))}
                 </div>
 
                 {/* Desktop Menu */}
                 <div className="nav-menu" id="navMenu">
                     {navLinks.map((link) => (
-                        <a
-                            key={link.section}
+                        <Link
+                            key={link.href}
                             href={link.href}
                             className="nav-link"
-                            data-section={link.section}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleNavClick(link.section);
-                            }}
                         >
-                            {getNavText(link.textEn, link.textDe)}
-                        </a>
+                            {link.label}
+                        </Link>
                     ))}
                 </div>
 
                 <div className="nav-controls">
-                    <button className="lang-toggle" id="langToggle" title="Toggle Language" onClick={toggleLanguage}>
-                        <i className="fas fa-language"></i>
-                        <span className="lang-text">{language === 'en' ? 'DE' : 'EN'}</span>
-                    </button>
                     <div className="theme-toggle-switch" id="themeToggle" title="Toggle Theme" onClick={toggleTheme}>
                         <button 
                             className={`theme-option ${!isDarkMode ? 'active' : ''}`}

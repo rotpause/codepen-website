@@ -1,34 +1,56 @@
 'use client';
 
-import React from "react";
-import SkeletonLoader from "./components/SkeletonLoader";
-import "./page.css";
+import React from 'react';
+import Carousel from './components/Carousel';
+import WorkCard from './components/WorkCard';
+import { useFeaturedWorks } from './hooks/useFeaturedWorks';
+import './page.css';
 
 export default function Home() {
+  const { data: featuredWorks, loading: loading } = useFeaturedWorks();
+
   return (
     <main className="main-content">
-      <section id="works" className="section-content">
-        <div className="section-container">
-          <div className="skeleton-container">
-            <SkeletonLoader />
-            <SkeletonLoader />
-          </div>
-          <div className="section-text">
-            <h1>Works</h1>
-            <p>Your projects and portfolio items go here</p>
-          </div>
+      {/* Hero/Intro Section */}
+      <section className="hero-section">
+        <div className="hero-container">
+          <h1 className="hero-title">Living Archive</h1>
+          <p className="hero-subtitle">
+            A dynamic exploration of contemporary practice, archival methodology, and collective knowledge
+          </p>
         </div>
       </section>
 
-      <section id="about" className="section-content">
+      {/* Current Events Carousel */}
+      <section className="carousel-section">
         <div className="section-container">
-          <div className="skeleton-container">
-            <SkeletonLoader />
-            <SkeletonLoader />
+          <div className="section-header">
+            <h2>Current Events</h2>
+            <p className="section-description">Featured works and recent projects</p>
           </div>
-          <div className="section-text">
-            <h1>About</h1>
-            <p>Your about information goes here</p>
+          <Carousel items={featuredWorks} loading={loading} />
+        </div>
+      </section>
+
+      {/* Featured Works Preview */}
+      <section className="featured-works-section">
+        <div className="section-container">
+          <div className="section-header">
+            <h2>Recent Works</h2>
+            <p className="section-description">Explore the latest additions to the archive</p>
+          </div>
+          <div className="works-grid">
+            {loading ? (
+              <>
+                <WorkCard loading={true} />
+                <WorkCard loading={true} />
+                <WorkCard loading={true} />
+              </>
+            ) : (
+              featuredWorks?.map((work) => (
+                <WorkCard key={work.id} work={work} loading={false} />
+              ))
+            )}
           </div>
         </div>
       </section>
